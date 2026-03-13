@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Stock Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+margin:0;
+}
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px;
+background:#1e293b;
+}
+input{
+padding:8px;
+border-radius:6px;
+border:none;
+}
+button{
+padding:8px 12px;
+background:#3b82f6;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+button:hover{
+background:#2563eb;
+}
+.stats{
+display:flex;
+gap:20px;
+padding:15px;
+}
+.card{
+background:#1e293b;
+padding:15px;
+border-radius:8px;
+flex:1;
+}
+.container{
+display:grid;
+grid-template-columns:3fr 1fr;
+gap:15px;
+padding:15px;
+}
+.chart{
+background:#1e293b;
+padding:15px;
+border-radius:8px;
+}
+.watchlist{
+background:#1e293b;
+padding:15px;
+border-radius:8px;
+}
+.watchlist ul{
+list-style:none;
+padding:0;
+}
+.watchlist li{
+cursor:pointer;
+padding:8px;
+border-radius:6px;
+}
+.watchlist li:hover{
+background:#334155;
+}
+.green{color:#22c55e;}
+.red{color:#ef4444;}
+</style>
+</head>
+<body>
+<header>
+<h2>📈 Stock Dashboard</h2>
+<div>
+<input id="stockInput" placeholder="Enter stock (AAPL)">
+<button onclick="searchStock()">Search</button>
+</div>
+</header>
+<div class="stats">
+<div class="card">
+<h3>Price</h3>
+<p id="price">$0</p>
+</div>
+<div class="card">
+<h3>Change</h3>
+<p id="change">0%</p>
+</div>
+<div class="card">
+<h3>Volume</h3>
+<p id="volume">0</p>
+</div>
+</div>
+<div class="container">
+<div class="chart">
+<canvas id="chart"></canvas>
+</div>
+<div class="watchlist">
+<h3>Watchlist</h3>
+<ul>
+<li onclick="quickStock('AAPL')">Apple</li>
+<li onclick="quickStock('TSLA')">Tesla</li>
+<li onclick="quickStock('AMZN')">Amazon</li>
+<li onclick="quickStock('MSFT')">Microsoft</li>
+</ul>
+</div>
+</div>
+<script>
+let chart;
+function generateFakeData(){
+return Array.from({length:10},()=>Math.floor(Math.random()*50)+100);
+}
+function loadChart(stock){
+const data=generateFakeData();
+let price=data[data.length-1];
+document.getElementById("price").innerText="$"+price;
+let changeValue=(Math.random()*5-2.5).toFixed(2);
+let changeElement=document.getElementById("change");
+changeElement.innerText=changeValue+"%";
+if(changeValue>0){
+changeElement.className="green";
+}else{
+changeElement.className="red";
+}
+document.getElementById("volume").innerText=
+Math.floor(Math.random()*1000000);
+if(chart) chart.destroy();
+chart=new Chart(document.getElementById("chart"),{
+type:'line',
+data:{
+labels:["1","2","3","4","5","6","7","8","9","10"],
+datasets:[{
+label:stock+" Price",
+data:data,
+borderColor:"#3b82f6",
+backgroundColor:"rgba(59,130,246,0.2)",
+borderWidth:2,
+tension:0.4,
+fill:true
+}]
+},
+options:{
+plugins:{
+legend:{
+labels:{color:"white"}
+}
+},
+scales:{
+x:{ticks:{color:"white"}},
+y:{ticks:{color:"white"}}
+}
+}
+});
+}
+function searchStock(){
+const stock=document.getElementById("stockInput").value || "AAPL";
+loadChart(stock);
+}
+function quickStock(stock){
+document.getElementById("stockInput").value=stock;
+loadChart(stock);
+}
+setInterval(()=>{
+loadChart(document.getElementById("stockInput").value || "AAPL");
+},5000);
+loadChart("AAPL");
+</script>
+</body>
+</html>
